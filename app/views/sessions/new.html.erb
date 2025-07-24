@@ -1,0 +1,13 @@
+<h2>Iniciar Sesión</h2>
+
+<%= form_with url: login_path, local: true do |f| %>
+  <%= label_tag :email, "Correo electrónico" %><br>
+  <%= email_field_tag :email %><br>
+
+  <%= label_tag :password, "Contraseña" %><br>
+  <%= password_field_tag :password %><br>
+
+  <%= submit_tag "Ingresar", class:"btn btn-success" %>
+<% end %>
+
+<%= link_to "¿No tenés cuenta? Registrate", signup_path %>

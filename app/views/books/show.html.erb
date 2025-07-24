@@ -1,0 +1,19 @@
+<h2><%= @book.title %></h2>
+<p><strong>Autor:</strong> <%= @book.author %></p>
+<p><strong>Género:</strong> <%= @book.genre %></p>
+<p><strong>Año:</strong> <%= @book.year %></p>
+<p><strong>Sinopsis:</strong> <%= @book.synopsis %></p>
+<p><strong>Detalles:</strong> <%= @book.details %></p>
+<p><strong>Publicado por:</strong> <%= link_to @book.user.name, user_path(@book.user) %></p>
+
+<% if current_user && current_user != @book.user %>
+  <%= form_with url: exchange_requests_path, method: :post do |f| %>
+    <%= hidden_field_tag :book_id, @book.id %>
+    <%= f.submit "Solicitar intercambio" %>
+  <% end %>
+<% end %>
+
+<% if current_user == @book.user %>
+  <%= link_to "Editar", edit_book_path(@book), class:"btn btn-success" %> |
+  <%= link_to "Eliminar", book_path(@book), method: :delete, data: { confirm: "¿Estás seguro?", class:"btn btn-danger" } %>
+<% end %>

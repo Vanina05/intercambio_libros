@@ -1,0 +1,27 @@
+<h2>Solicitudes de intercambio</h2>
+
+<h3>Solicitudes recibidas</h3>
+<% @received.each do |req| %>
+  <p>
+    <strong><%= req.sender.name %></strong> quiere intercambiar el libro <%= link_to req.book.title, book_path(req.book) %><br>
+    Estado: <%= req.status %><br>
+
+    <% if req.status == "pending" %>
+      <%= button_to "Aceptar", exchange_request_path(req, status: "accepted"), method: :patch %>
+      <%= button_to "Rechazar", exchange_request_path(req, status: "rejected"), method: :patch %>
+    <% elsif req.status == "accepted" %>
+      <p><strong>Contacto del usuario:</strong> <%= req.sender.email %></p>
+    <% end %>
+  </p>
+<% end %>
+
+<h3>Solicitudes enviadas</h3>
+<% @sent.each do |req| %>
+  <p>
+    A <%= req.receiver.name %> por el libro <%= link_to req.book.title, book_path(req.book) %><br>
+    Estado: <%= req.status %>
+    <% if req.status == "accepted" %>
+      <br><strong>Contacto del usuario:</strong> <%= req.receiver.email %>
+    <% end %>
+  </p>
+<% end %>

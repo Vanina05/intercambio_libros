@@ -1,0 +1,28 @@
+<h2>Libros disponibles para intercambio</h2>
+
+<%= form_with url: search_path, method: :get, local: true do %>
+  <%= text_field_tag :query, params[:query], placeholder: "Buscar por título, autor o género" %>
+  <%= submit_tag "Buscar", class:"btn btn-secondary" %>
+<% end %>
+
+<div class="container">
+  <div class="row">
+    <% @books.each do |book| %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title"><%= link_to book.title, book_path(book) %></h5>
+            <p><strong>Autor:</strong> <%= book.author %></p>
+            <p><strong>Género:</strong> <%= book.genre %></p>
+            <p><strong>Año:</strong> <%= book.year %></p>
+            <p><strong>Publicado por:</strong> <%= link_to book.user.name, user_path(book.user) %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% if current_user %>
+  <%= link_to "Publicar nuevo libro", new_book_path, class: "btn btn-info" %>
+<% end %>
