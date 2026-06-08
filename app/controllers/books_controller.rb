@@ -43,7 +43,16 @@ class BooksController < ApplicationController
 
   def search
     query = params[:query]
+
     @books = Book.where("title LIKE ? OR author LIKE ? OR genre LIKE ?", "%#{query}%", "%#{query}%", "%#{query}%")
+
+    # Filtrar por género, ignorando "Todos"
+    if params[:genre].present? && params[:genre] != "Todos"
+      # Para evitar problemas con espacios, usamos strip
+      genre = params[:genre].strip
+      @books = @books.where("genre = ?", genre)
+    end
+
     render :index
   end
 

@@ -1,28 +1,86 @@
-<h2>Libros disponibles para intercambio</h2>
+<% if current_user %>
+  <!-- Menú lateral simple -->
+  <div style="
+      position: fixed;
+      right: 0;
+      top: 100px;
+      width: 160px;
+      padding: 10px;
+  ">
+    <%= link_to user_path(current_user), 
+        style: "
+          display: block;
+          padding: 10px;
+          text-decoration: none;
+          color: #333;
+          background-color: transparent;
+          border-radius: 5px;
+          font-weight: bold;
+          transition: 0.2s;
+        ",
+        onmouseover: "this.style.backgroundColor='#e8e8e8'",
+        onmouseout: "this.style.backgroundColor='transparent'" do %>
 
-<%= form_with url: search_path, method: :get, local: true do %>
-  <%= text_field_tag :query, params[:query], placeholder: "Buscar por título, autor o género" %>
-  <%= submit_tag "Buscar", class:"btn btn-secondary" %>
-<% end %>
+        <!-- Ícono -->
+        <svg xmlns="http://www.w3.org/2000/svg" 
+            width="20" height="20" fill="currentColor" 
+            class="bi bi-person-circle" viewBox="0 0 16 16">
+          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+        </svg>
 
-<div class="container">
-  <div class="row">
-    <% @books.each do |book| %>
-      <div class="col-md-4 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title"><%= link_to book.title, book_path(book) %></h5>
-            <p><strong>Autor:</strong> <%= book.author %></p>
-            <p><strong>Género:</strong> <%= book.genre %></p>
-            <p><strong>Año:</strong> <%= book.year %></p>
-            <p><strong>Publicado por:</strong> <%= link_to book.user.name, user_path(book.user) %></p>
-          </div>
-        </div>
-      </div>
+      Mi Perfil
     <% end %>
   </div>
-</div>
 
-<% if current_user %>
+  <h2>Libros disponibles para intercambio</h2>
+
+  <%= form_with url: search_path, method: :get, local: true, id: "search_form" do %>
+    <%= text_field_tag :query, params[:query], placeholder: "Buscar por título, autor o género" %>
+
+    <%= select_tag :genre, 
+          options_for_select(["Todos"] + Book.distinct.pluck(:genre).compact.sort, params[:genre]),
+          id: "genre_select" %>
+
+    <%= submit_tag "Buscar", class:"btn btn-secondary" %>
+  <% end %>
+
+  <div class="container">
+    <div class="row">
+      <% @books.each do |book| %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= link_to book.title, book_path(book) %></h5>
+              <p><strong>Autor:</strong> <%= book.author %></p>
+              <p><strong>Género:</strong> <%= book.genre %></p>
+              <p><strong>Año:</strong> <%= book.year %></p>
+              <p><strong>Publicado por:</strong> <%= link_to book.user.name, user_path(book.user) %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
   <%= link_to "Publicar nuevo libro", new_book_path, class: "btn btn-info" %>
+
+    <!-- JavaScript para enviar el form automáticamente al cambiar la categoría -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const genreSelect = document.getElementById("genre_select");
+      const searchForm = document.getElementById("search_form");
+
+      genreSelect.addEventListener("change", function() {
+        searchForm.submit();
+      });
+    });
+  </script>
+
+<% else %>
+
+  <!-- Vista para usuarios NO logueados -->
+  <h2>Bienvenido a la plataforma de intercambio de libros</h2>
+  <p>Inicia sesión para ver los libros disponibles y publicar los tuyos.</p>
+
 <% end %>

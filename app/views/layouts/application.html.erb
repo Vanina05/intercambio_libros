@@ -18,14 +18,24 @@
     <header>
       <nav>
         <% if current_user %>
-          <p>Bienvenido!! <%= current_user.nombre %> | 
-            <%= button_to "Cerrar sesión", logout_path, method: :delete, class:"btn btn-danger" %>
+          <p>Bienvenido!! <%= current_user.nombre %>
           </p>
         <% else %>
           <%= link_to "Iniciar sesión", login_path, class:"btn btn-primary" %> |
           <%= link_to "Registrarse", new_user_path, class:"btn btn-secondary" %>
         <% end %>
       </nav>
+      <% if notice %>
+        <div class="alert alert-success text-center">
+          <%= notice %>
+        </div>
+      <% end %>
+
+      <% if alert %>
+        <div class="alert alert-danger text-center">
+          <%= alert %>
+        </div>
+      <% end %>
     </header>
 
     <%= yield %>

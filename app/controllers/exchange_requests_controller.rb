@@ -18,9 +18,9 @@ class ExchangeRequestsController < ApplicationController
         read: false
       )
 
-      redirect_to book_path(book), notice: "Solicitud enviada"
+      redirect_to book_path(book), notice: "¡Solicitud de intercambio enviada correctamente!"
     else
-      redirect_to book_path(book), alert: "No se pudo enviar la solicitud"
+      redirect_to book_path(book), alert: "No se pudo enviar la solicitud. Inténtalo nuevamente."
     end
   end
 

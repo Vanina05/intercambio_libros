@@ -4,23 +4,66 @@
 
 <% if current_user == @user %>
   <%= link_to "Editar perfil", edit_user_path(@user) %>
+
+  <h3>Notificaciones</h3>
+
+  <% if @notifications.any? %>
+    <ul>
+      <% @notifications.each do |notification| %>
+        <li style="<%= 'font-weight: bold;' unless notification.read %>">
+          <%= notification.message %>
+          <% unless notification.read %>
+            <%= button_to "Marcar como leída", mark_read_notification_path(notification), method: :patch %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No tienes notificaciones.</p>
+  <% end %>
 <% end %>
 
-<h3>Notificaciones</h3>
+<h3>Libros publicados</h3>
 
-<% if @user.notifications.any? %>
-  <ul>
-    <% @user.notifications.order(created_at: :desc).each do |notification| %>
-      <li style="<%= 'font-weight: bold;' unless notification.read %>">
-        <%= notification.message %>
-        <% unless notification.read %>
-          <%= button_to "Marcar como leída", mark_read_notification_path(notification), method: :patch %>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
+<% if @user.books.any? %>
+  <div class="container">
+    <div class="row">
+      <% @user.books.each do |book| %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <%= link_to book.title, book_path(book) %>
+              </h5>
+              <p><strong>Autor:</strong> <%= book.author %></p>
+              <p><strong>Género:</strong> <%= book.genre %></p>
+              <p><strong>Año:</strong> <%= book.year %></p>
+              <% if book.synopsis.present? %>
+                <p><strong>Sinopsis:</strong> <%= truncate(book.synopsis, length: 100) %></p>
+              <% end %>
+              <% if book.details.present? %>
+                <p><strong>Detalles:</strong> <%= truncate(book.details, length: 100) %></p>
+              <% end %>
+              <p><strong>Publicado por:</strong> <%= link_to @user.name, user_path(@user) %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 <% else %>
-  <p>No tienes notificaciones.</p>
+  <p>Este usuario no ha publicado libros.</p>
 <% end %>
 
 <%= link_to 'Volver al inicio', root_path, class: 'btn btn-primary' %>
+
+<div class="text-center mt-4">
+  <%= button_to logout_path, method: :delete, class: "btn btn-danger d-flex align-items-center gap-2 mx-auto" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M6.146 11.354a.5.5 0 0 0 .708 0L10 8.207l-3.146-3.147a.5.5 0 1 0-.708.708L8.793 8l-2.647 2.646a.5.5 0 0 0 0 .708z"/>
+      <path fill-rule="evenodd" d="M10 8a.5.5 0 0 0-.5-.5H3.5a.5.5 0 0 0 0 1H9.5A.5.5 0 0 0 10 8z"/>
+      <path d="M13.5 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 1 0V12h5V4h-5v2.5a.5.5 0 0 1-1 0V4a1 1 0 0 1 1-1h5z"/>
+    </svg>
+    Cerrar sesión
+  <% end %>
+</div>

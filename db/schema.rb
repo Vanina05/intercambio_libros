@@ -26,12 +26,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_24_004757) do
 
   create_table "exchange_requests", force: :cascade do |t|
     t.integer "sender_id", null: false
-    t.integer "receiver_id"
+    t.integer "receiver_id", null: false
     t.integer "book_id", null: false
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["book_id"], name: "index_exchange_requests_on_book_id"
+    t.index ["receiver_id"], name: "index_exchange_requests_on_receiver_id"
     t.index ["sender_id"], name: "index_exchange_requests_on_sender_id"
   end
 
@@ -45,16 +46,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_24_004757) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.timestamps null: false
+    t.string "name"
+    t.string "email"
+    t.string "password_digest"
+    t.string "city"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "nombre"
   end
 
   add_foreign_key "books", "users"
   add_foreign_key "exchange_requests", "books"
+  add_foreign_key "exchange_requests", "users", column: "receiver_id"
   add_foreign_key "exchange_requests", "users", column: "sender_id"
   add_foreign_key "notifications", "users"
 end

@@ -56,6 +56,4 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "bcrypt", "~> 3.1.7"
-
-gem "devise"
+gem 'bcrypt', '~> 3.1.7'
