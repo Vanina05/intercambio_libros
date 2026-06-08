@@ -42,15 +42,23 @@ class BooksController < ApplicationController
   end
 
   def search
-    query = params[:query]
+    @books = Book.all.includes(:user)
 
-    @books = Book.where("title LIKE ? OR author LIKE ? OR genre LIKE ?", "%#{query}%", "%#{query}%", "%#{query}%")
+    if params[:query].present?
+      # Preparamos la búsqueda
+      query_raw = params[:query].downcase
+      query_clean = I18n.transliterate(params[:query]).downcase
 
-    # Filtrar por género, ignorando "Todos"
-    if params[:genre].present? && params[:genre] != "Todos"
-      # Para evitar problemas con espacios, usamos strip
-      genre = params[:genre].strip
-      @books = @books.where("genre = ?", genre)
+      # Buscamos de forma flexible
+      # Usamos '%#{valor}%' para que encuentre la palabra en cualquier parte del texto
+      @books = @books.where(
+        "LOWER(title) LIKE ? OR LOWER(title) LIKE ? OR LOWER(author) LIKE ? OR LOWER(author) LIKE ?",
+        "%#{query_raw}%", "%#{query_clean}%", "%#{query_raw}%", "%#{query_clean}%"
+      )
+    end
+
+    if params[:genre].present? && params[:genre] != "Todos los géneros" && params[:genre] != "Todos"
+      @books = @books.where(genre: params[:genre])
     end
 
     render :index
@@ -59,7 +67,7 @@ class BooksController < ApplicationController
   private
 
   def book_params
-    params.require(:book).permit(:title, :author, :genre, :year, :synopsis, :details)
+    params.require(:book).permit(:title, :author, :genre, :year, :synopsis, :details, :image)
   end
 
   def require_login

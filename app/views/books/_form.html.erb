@@ -17,5 +17,10 @@
   <%= f.label :details %><br>
   <%= f.text_area :details %><br>
 
+  <div class="mb-3">
+    <%= f.label :image, "Portada del Libro", class: "form-label fw-bold" %>
+    <%= f.file_field :image, class: "form-control" %>
+  </div>
+
   <%= f.submit %>
 <% end %>

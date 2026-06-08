@@ -1,86 +1,104 @@
 <% if current_user %>
-  <!-- Menú lateral simple -->
-  <div style="
-      position: fixed;
-      right: 0;
-      top: 100px;
-      width: 160px;
-      padding: 10px;
-  ">
-    <%= link_to user_path(current_user), 
-        style: "
-          display: block;
-          padding: 10px;
-          text-decoration: none;
-          color: #333;
-          background-color: transparent;
-          border-radius: 5px;
-          font-weight: bold;
-          transition: 0.2s;
-        ",
-        onmouseover: "this.style.backgroundColor='#e8e8e8'",
-        onmouseout: "this.style.backgroundColor='transparent'" do %>
+  <div style="background-color: #ded3d8; min-height: 100vh; padding-top: 20px; padding-bottom: 50px;">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0" style="color: #4a4a4a;">Libros disponibles</h2>
+        <%= link_to "Publicar nuevo libro", new_book_path, class: "btn btn-info text-white shadow-sm" %>
+      </div>
 
-        <!-- Ícono -->
-        <svg xmlns="http://www.w3.org/2000/svg" 
-            width="20" height="20" fill="currentColor" 
-            class="bi bi-person-circle" viewBox="0 0 16 16">
-          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-        </svg>
-
-      Mi Perfil
-    <% end %>
-  </div>
-
-  <h2>Libros disponibles para intercambio</h2>
-
-  <%= form_with url: search_path, method: :get, local: true, id: "search_form" do %>
-    <%= text_field_tag :query, params[:query], placeholder: "Buscar por título, autor o género" %>
-
-    <%= select_tag :genre, 
-          options_for_select(["Todos"] + Book.distinct.pluck(:genre).compact.sort, params[:genre]),
-          id: "genre_select" %>
-
-    <%= submit_tag "Buscar", class:"btn btn-secondary" %>
-  <% end %>
-
-  <div class="container">
-    <div class="row">
-      <% @books.each do |book| %>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title"><%= link_to book.title, book_path(book) %></h5>
-              <p><strong>Autor:</strong> <%= book.author %></p>
-              <p><strong>Género:</strong> <%= book.genre %></p>
-              <p><strong>Año:</strong> <%= book.year %></p>
-              <p><strong>Publicado por:</strong> <%= link_to book.user.name, user_path(book.user) %></p>
+      <div class="card border-0 shadow-sm p-2 mb-5 bg-white" style="border-radius: 15px;">
+        <%= form_with url: search_path, method: :get, local: true, id: "search_form", class: "p-2" do %>
+          <div class="row g-2 align-items-center">
+            <div class="col-12 col-sm-6 col-lg-7">
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+                <%= text_field_tag :query, params[:query], placeholder: "Buscar por título o autor...", class: "form-control border-0 shadow-none" %>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3 col-lg-3">
+              <%= select_tag :genre, options_for_select(["Todos los géneros"] + Book.distinct.pluck(:genre).compact.sort, params[:genre]), id: "genre_select", class: "form-select border-0 shadow-none bg-light" %>
+            </div>
+            <div class="col-6 col-sm-3 col-lg-2">
+              <%= submit_tag "Buscar", class: "btn btn-primary w-100 fw-bold shadow-sm" %>
             </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
+
+      <div class="row">
+        <% @books.each do |book| %>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+              <% if book.image.attached? %>
+                <%= image_tag book.image, class: "card-img-top", style: "height: 250px; object-fit: cover; border-top-left-radius: 12px; border-top-right-radius: 12px;" %>
+              <% else %>
+                <div class="bg-light text-center d-flex align-items-center justify-content-center" style="height: 250px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                  <span class="text-muted">Sin portada</span>
+                </div>
+              <% end %>
+              <div class="card-body">
+                <span class="badge bg-primary-subtle text-primary mb-2"><%= book.genre %></span>
+                <h5 class="card-title fw-bold">
+                  <%= link_to book.title, book_path(book), class: "text-decoration-none text-dark" %>
+                </h5>
+                <p class="text-muted mb-1 small"><strong>Autor:</strong> <%= book.author %></p>
+                <p class="text-muted mb-3 small"><strong>Año:</strong> <%= book.year %></p>
+                <hr class="my-3 opacity-25">
+                <p class="small text-muted mb-0">
+                  Publicado por: <%= link_to book.user.name, user_path(book.user), class: "text-primary text-decoration-none fw-bold" %>
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 
-  <%= link_to "Publicar nuevo libro", new_book_path, class: "btn btn-info" %>
-
-    <!-- JavaScript para enviar el form automáticamente al cambiar la categoría -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const genreSelect = document.getElementById("genre_select");
-      const searchForm = document.getElementById("search_form");
-
-      genreSelect.addEventListener("change", function() {
-        searchForm.submit();
-      });
-    });
-  </script>
-
 <% else %>
-
-  <!-- Vista para usuarios NO logueados -->
-  <h2>Bienvenido a la plataforma de intercambio de libros</h2>
-  <p>Inicia sesión para ver los libros disponibles y publicar los tuyos.</p>
-
+  <div class="container-fluid p-0">
+    <div class="text-center bg-dark text-white shadow-lg" style="
+        background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
+                    url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        padding: 60px 20px;
+    ">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h1 class="display-1 fw-bold mb-4">Dale una nueva vida a tus libros</h1>
+            <p class="lead fs-3 mb-5">Únete a la comunidad de intercambio más grande.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+              <%= link_to "Comenzar ahora", signup_path, class: "btn btn-primary btn-lg px-5 py-3 fw-bold shadow-lg" %>
+              <%= link_to "Saber más", "#info", class: "btn btn-outline-light btn-lg px-5 py-3" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <% end %>
+
+<style>
+  .hover-card { transition: all 0.3s ease; }
+  .hover-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important;
+  }
+  /* Ajuste para que el texto del Hero no se corte en móviles */
+  h1.display-1 { font-size: calc(1.625rem + 4.5vw); }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const genreSelect = document.getElementById("genre_select");
+    const searchForm = document.getElementById("search_form");
+    if (genreSelect && searchForm) {
+      genreSelect.addEventListener("change", () => searchForm.submit());
+    }
+  });
+</script>

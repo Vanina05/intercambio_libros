@@ -13,6 +13,18 @@
  *= require_tree .
  *= require_self
  */
+ body {
+  /* Este espacio debe ser un poco mayor que la altura de tu navbar */
+  padding-top: 100px !important; 
+  background-color: #ded3d8 !important;
+  margin: 0;
+}
+
+/* Esto asegura que la Navbar siempre esté por encima de todo */
+.navbar {
+  z-index: 1070 !important;
+}
+
  body, html {
   height: 100%;
   margin: 0;
