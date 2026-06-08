@@ -1,26 +1,65 @@
-<%= form_with model: @book, local: true do |f| %>
-  <%= f.label :title %><br>
-  <%= f.text_field :title %><br>
+<%= form_with model: @book, local: true, class: "p-4" do |f| %>
 
-  <%= f.label :author %><br>
-  <%= f.text_field :author %><br>
-
-  <%= f.label :genre %><br>
-  <%= f.text_field :genre %><br>
-
-  <%= f.label :year %><br>
-  <%= f.number_field :year %><br>
-
-  <%= f.label :synopsis %><br>
-  <%= f.text_area :synopsis %><br>
-
-  <%= f.label :details %><br>
-  <%= f.text_area :details %><br>
-
-  <div class="mb-3">
-    <%= f.label :image, "Portada del Libro", class: "form-label fw-bold" %>
-    <%= f.file_field :image, class: "form-control" %>
+  <div class="d-flex align-items-center mb-4">
+    <%= link_to root_path, class: "text-secondary hover-primary me-3", title: "Volver al inicio" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+      </svg>
+    <% end %>
+    <h4 class="m-0 fw-bold text-secondary">Información del Libro</h4>
   </div>
+  
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      <%= f.label :title, "Título del libro", class: "form-label fw-bold text-secondary" %>
+      <%= f.text_field :title, class: "form-control border-0 bg-light p-3", placeholder: "Ej: Cien años de soledad", style: "border-radius: 10px;" %>
+    </div>
 
-  <%= f.submit %>
+    <div class="col-md-6 mb-3">
+      <%= f.label :author, "Autor", class: "form-label fw-bold text-secondary" %>
+      <%= f.text_field :author, class: "form-control border-0 bg-light p-3", placeholder: "Nombre del autor", style: "border-radius: 10px;" %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :genre, "Género", class: "form-label fw-bold text-secondary" %>
+      <%= f.text_field :genre, class: "form-control border-0 bg-light p-3", placeholder: "Ej: Novela, Fantasía...", style: "border-radius: 10px;" %>
+    </div>
+
+    <div class="col-md-12 mb-3">
+      <%= f.label :year, "Año de publicación", class: "form-label fw-bold text-secondary" %>
+      <%= f.number_field :year, class: "form-control border-0 bg-light p-3", placeholder: "2024", style: "border-radius: 10px;" %>
+    </div>
+
+    <div class="col-md-12 mb-3">
+      <%= f.label :synopsis, "Sinopsis", class: "form-label fw-bold text-secondary" %>
+      <%= f.text_area :synopsis, rows: 4, class: "form-control border-0 bg-light p-3", placeholder: "Cuéntanos de qué trata el libro...", style: "border-radius: 10px;" %>
+    </div>
+
+    <div class="col-md-12 mb-4">
+      <%= f.label :details, "Detalles adicionales (Estado, edición...)", class: "form-label fw-bold text-secondary" %>
+      <%= f.text_area :details, rows: 3, class: "form-control border-0 bg-light p-3", placeholder: "Ej: Tapa dura, estado 9/10", style: "border-radius: 10px;" %>
+    </div>
+
+    <div class="col-md-12 mb-5">
+      <div class="p-4 border-dashed rounded-3 text-center bg-light" style="border: 2px dashed #ccc;">
+        <%= f.label :image, "Portada del Libro", class: "form-label fw-bold d-block mb-3" %>
+        <%= f.file_field :image, class: "form-control shadow-none border-0 bg-white" %>
+        <p class="text-muted small mt-2 mb-0">Formatos recomendados: JPG o PNG</p>
+      </div>
+    </div>
+
+    <div class="col-md-12 d-grid mt-4">
+      <%= f.submit @book.new_record? ? "Publicar Libro" : "Actualizar Libro", 
+          class: "btn btn-primary btn-lg fw-bold shadow-sm py-3", 
+          style: "border-radius: 15px;" %>
+    </div>
+  </div>
 <% end %>
+
+<style>
+  .hover-primary:hover {
+    color: #9a7e96 !important;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+  }
+</style>

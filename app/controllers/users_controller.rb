@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+  # Agregamos esto para no repetir User.find en cada método
+  before_action :set_user, only: [ :show, :edit, :update ]
+
   def new
     @user = User.new
   end
@@ -24,6 +27,13 @@ class UsersController < ApplicationController
     end
   end
 
+  def edit
+    # Verificamos que el usuario solo pueda editar su propio perfil
+    unless @user == current_user
+      redirect_to root_path, alert: "No tienes permiso para editar este perfil."
+    end
+  end
+
   def update
     @user = current_user
     if @user.update(user_params)
@@ -34,6 +44,12 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def set_user
+    @user = User.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_path, alert: "Usuario no encontrado"
+  end
 
   def user_params
     params.require(:user).permit(:name, :email, :password, :city, :description)

@@ -1,69 +1,119 @@
-<h2>Perfil de <%= @user.name %></h2>
-<p><strong>Ciudad:</strong> <%= @user.city %></p>
-<p><strong>Descripción:</strong> <%= @user.description %></p>
-
-<% if current_user == @user %>
-  <%= link_to "Editar perfil", edit_user_path(@user) %>
-
-  <h3>Notificaciones</h3>
-
-  <% if @notifications.any? %>
-    <ul>
-      <% @notifications.each do |notification| %>
-        <li style="<%= 'font-weight: bold;' unless notification.read %>">
-          <%= notification.message %>
-          <% unless notification.read %>
-            <%= button_to "Marcar como leída", mark_read_notification_path(notification), method: :patch %>
+<div class="container pt-5 pb-5">
+  <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; background-color: white;">
+    <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        <h1 class="fw-bold text-dark mb-1">Perfil de <%= @user.name %></h1>
+        <p class="text-muted mb-2"><i class="bi bi-geo-alt-fill me-1"></i><%= @user.city %></p>
+        <p class="mb-0 text-secondary" style="max-width: 600px;"><%= @user.description %></p>
+      </div>
+      
+      <div class="d-flex gap-2 mt-3 mt-md-0">
+        <% if current_user == @user %>
+          <%= link_to edit_user_path(@user), class: "btn btn-outline-primary fw-bold px-4" do %>
+            <i class="bi bi-pencil-square me-1"></i> Editar perfil
           <% end %>
-        </li>
+
+          <%= button_to logout_path, method: :delete, class: "btn btn-danger d-flex align-items-center justify-content-center gap-2 shadow-sm w-100" do %>
+            <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if current_user == @user %>
+    <div class="mb-5">
+      <% unread_count = @notifications.where(read: false).count %>
+      
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <h3 class="fw-bold m-0">Notificaciones</h3>
+        <button class="btn btn-primary position-relative fw-bold px-4 shadow-sm">
+          Solicitudes
+          <% if unread_count > 0 %>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow">
+              <%= unread_count %>
+              <span class="visually-hidden">mensajes no leídos</span>
+            </span>
+          <% end %>
+        </button>
+      </div>
+
+      <% if @notifications.any? %>
+        <div class="list-group shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+          <% @notifications.each do |notification| %>
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 border-0 <%= 'bg-light fw-bold border-start border-primary border-4' unless notification.read %>">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi <%= notification.read ? 'bi-envelope-open text-muted' : 'bi-envelope-fill text-primary' %>"></i>
+                <span><%= notification.message %></span>
+              </div>
+              <% unless notification.read %>
+                <%= button_to mark_read_notification_path(notification), method: :patch, class: "btn btn-sm btn-light border" do %>
+                  <i class="bi bi-check2"></i> Marcar leída
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="alert alert-light border shadow-sm text-center py-4">
+          <p class="text-muted mb-0">No tienes notificaciones pendientes.</p>
+        </div>
       <% end %>
-    </ul>
-  <% else %>
-    <p>No tienes notificaciones.</p>
+    </div>
   <% end %>
-<% end %>
 
-<h3>Libros publicados</h3>
+  <hr class="my-5 opacity-25">
 
-<% if @user.books.any? %>
-  <div class="container">
+  <h3 class="fw-bold mb-4">Libros publicados</h3>
+
+  <% if @user.books.any? %>
     <div class="row">
       <% @user.books.each do |book| %>
         <div class="col-md-4 mb-4">
-          <div class="card h-100">
+          <div class="card h-100 border-0 shadow-sm hover-card" style="border-radius: 15px; overflow: hidden;">
+            <% if book.image.attached? %>
+              <%= image_tag book.image, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
+            <% else %>
+              <div class="bg-light text-center d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="text-muted">Sin portada</span>
+              </div>
+            <% end %>
+
             <div class="card-body">
-              <h5 class="card-title">
-                <%= link_to book.title, book_path(book) %>
+              <span class="badge bg-info-subtle text-info mb-2"><%= book.genre %></span>
+              <h5 class="card-title fw-bold">
+                <%= link_to book.title, book_path(book), class: "text-decoration-none text-dark" %>
               </h5>
-              <p><strong>Autor:</strong> <%= book.author %></p>
-              <p><strong>Género:</strong> <%= book.genre %></p>
-              <p><strong>Año:</strong> <%= book.year %></p>
+              <p class="text-muted small mb-1"><strong>Autor:</strong> <%= book.author %></p>
+              
               <% if book.synopsis.present? %>
-                <p><strong>Sinopsis:</strong> <%= truncate(book.synopsis, length: 100) %></p>
+                <p class="card-text small text-secondary"><%= truncate(book.synopsis, length: 80) %></p>
               <% end %>
-              <% if book.details.present? %>
-                <p><strong>Detalles:</strong> <%= truncate(book.details, length: 100) %></p>
-              <% end %>
-              <p><strong>Publicado por:</strong> <%= link_to @user.name, user_path(@user) %></p>
+
+              <hr class="my-3 opacity-25">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Año: <%= book.year %></span>
+                <%= link_to "Ver más", book_path(book), class: "btn btn-sm btn-outline-primary" %>
+              </div>
             </div>
           </div>
         </div>
       <% end %>
     </div>
-  </div>
-<% else %>
-  <p>Este usuario no ha publicado libros.</p>
-<% end %>
-
-<%= link_to 'Volver al inicio', root_path, class: 'btn btn-primary' %>
-
-<div class="text-center mt-4">
-  <%= button_to logout_path, method: :delete, class: "btn btn-danger d-flex align-items-center gap-2 mx-auto" do %>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M6.146 11.354a.5.5 0 0 0 .708 0L10 8.207l-3.146-3.147a.5.5 0 1 0-.708.708L8.793 8l-2.647 2.646a.5.5 0 0 0 0 .708z"/>
-      <path fill-rule="evenodd" d="M10 8a.5.5 0 0 0-.5-.5H3.5a.5.5 0 0 0 0 1H9.5A.5.5 0 0 0 10 8z"/>
-      <path d="M13.5 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 1 0V12h5V4h-5v2.5a.5.5 0 0 1-1 0V4a1 1 0 0 1 1-1h5z"/>
-    </svg>
-    Cerrar sesión
+  <% else %>
+    <div class="text-center py-5">
+      <p class="text-muted italic">Este usuario no ha publicado libros todavía.</p>
+    </div>
   <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mt-5">
+    <%= link_to root_path, class: 'btn btn-outline-secondary d-flex align-items-center gap-2' do %>
+      <i class="bi bi-arrow-left"></i> Volver al inicio
+    <% end %>
+  </div>
 </div>
+
+<style>
+  .hover-card { transition: transform 0.2s ease; }
+  .hover-card:hover { transform: translateY(-5px); }
+</style>

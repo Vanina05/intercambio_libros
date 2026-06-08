@@ -1,2 +1,17 @@
-<h2>Editar libro</h2>
-<%= render 'form', book: @book %>
+<div class="text-center mb-5 mt-2">
+  <h2 class="display-5 fw-bold" style="color: #4a4a4a; letter-spacing: -1px;">
+    Editar libro
+  </h2>
+  <div style="width: 60px; height: 4px; background-color: #9a7e96; margin: 15px auto; border-radius: 2px;"></div>
+</div>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-lg" style="border-radius: 25px;">
+        <div class="card-body p-0">
+          <%= render 'form', book: @book %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

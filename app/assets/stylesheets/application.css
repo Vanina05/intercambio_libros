@@ -25,17 +25,28 @@
   z-index: 1070 !important;
 }
 
- body, html {
-  height: 100%;
+/* 1. Reset básico para que el scroll funcione */
+body, html {
   margin: 0;
-  overflow-y: auto; /* permite desplazamiento vertical */
+  padding: 0;
+  height: auto; /* Cambiado de 100% a auto */
+  overflow-y: visible; /* Permite el scroll natural */
+  background-color: #ded3d8; /* Tu color de fondo */
 }
 
+/* 2. Configuración del Body para una App de varias páginas */
 body {
-  display: flex;
-  justify-content: center; /* centra horizontalmente */
-  align-items: center; /* centra verticalmente */
-  min-height: 100vh; /* para que tome toda la altura */
-  flex-direction: column; /* si querés que el contenido se apile en columna */
-  text-align: center; /* opcional, para centrar texto */
+  /* ELIMINAMOS display: flex, justify-content y align-items */
+  
+  min-height: 100vh;
+  display: block; /* Flujo normal de arriba hacia abajo */
+  text-align: left; /* El texto debe alinearse a la izquierda por defecto */
+  
+  /* IMPORTANTE: Espacio para que la Navbar no tape el contenido */
+  padding-top: 100px !important; 
+}
+
+/* 3. Si quieres que el texto de los títulos esté centrado, hazlo específico */
+h1, h2, .text-center-custom {
+  text-align: center;
 }
