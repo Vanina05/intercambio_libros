@@ -49,9 +49,16 @@
             <%# 1. Lógica para el visitante (Solicitar intercambio) %>
             <% if current_user && current_user != @book.user %>
               <% if @book.available %>
-                <%= form_with url: exchange_requests_path, method: :post do |f| %>
-                  <%= hidden_field_tag :book_id, @book.id %>
-                  <%= f.submit "Solicitar intercambio", class: "btn btn-primary btn-lg px-4 py-2 shadow-sm fw-bold" %>
+                <%# Verificamos si ya existe una solicitud enviada por el usuario actual para este libro %>
+                <% if current_user.sent_requests.exists?(book_id: @book.id) %>
+                  <div class="alert alert-info d-inline-block px-4 py-2 mb-0" style="border-radius: 12px;">
+                    <i class="bi bi-info-circle me-2"></i> Ya has solicitado este libro
+                  </div>
+                <% else %>
+                  <%= form_with url: exchange_requests_path, method: :post do |f| %>
+                    <%= hidden_field_tag :book_id, @book.id %>
+                    <%= f.submit "Solicitar intercambio", class: "btn btn-primary btn-lg px-4 py-2 shadow-sm fw-bold" %>
+                  <% end %>
                 <% end %>
               <% else %>
                 <button class="btn btn-secondary btn-lg px-4 py-2" disabled>No disponible para intercambio</button>

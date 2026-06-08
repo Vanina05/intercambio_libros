@@ -4,7 +4,11 @@ class Book < ApplicationRecord
   # Esto vincula el libro con una imagen
   has_one_attached :image
 
+  # Agregamos todas las validaciones de presencia
   validates :title, :author, :genre, :year, :synopsis, :details, presence: true
+
+  # Validación personalizada para la imagen
+  validate :image_presence
 
   def self.search(query)
     if query.present?
@@ -16,6 +20,12 @@ class Book < ApplicationRecord
       where("LOWER(title) LIKE ?", "%#{parameterized_query}%")
     else
       all
+    end
+  end
+
+  def image_presence
+    unless image.attached?
+      errors.add(:image, "debe ser adjuntada obligatoriamente")
     end
   end
 end

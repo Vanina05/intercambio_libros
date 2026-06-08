@@ -51,7 +51,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                       </div>
                       <div class="modal-body">
-                        <p class="text-muted small">Al aceptar, se enviará un correo a <%= req.sender.name %> con tu información de contacto.</p>
+                        <p class="text-muted small">Al aceptar, se enviará un mensaje a <%= req.sender.name %>. </p>
                         <%= f.hidden_field :status, value: "accepted" %>
                         <%= f.label :response_message, "Escribe un mensaje o lugar de encuentro:", class: "form-label small fw-bold" %>
                         <%= f.text_area :response_message, class: "form-control bg-light border-0", rows: 3, placeholder: "Hola! Me encantaría intercambiar. Podemos vernos en...", required: true %>
