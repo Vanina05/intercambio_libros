@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   get "exchange_requests/create"
   get "exchange_requests/index"
   get "exchange_requests/update"
