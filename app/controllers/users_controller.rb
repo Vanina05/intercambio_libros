@@ -25,6 +25,23 @@ class UsersController < ApplicationController
     else
       @notifications = [] # No mostrar nada si es otro usuario
     end
+
+    if @user == current_user
+      # 1. Contamos todas las no leídas para el badge (el círculo rojo)
+      @unread_count = @user.notifications.where(read: false).count
+
+      # 2. Obtenemos todas las que no han sido leídas
+      unread_notifications = @user.notifications.where(read: false).order(created_at: :desc)
+
+      # 3. Obtenemos solo las últimas 5 que ya fueron leídas
+      recent_read_notifications = @user.notifications.where(read: true).order(created_at: :desc).limit(5)
+
+      # 4. Combinamos ambas listas (primero las no leídas, luego las 5 leídas)
+      @notifications = unread_notifications + recent_read_notifications
+    else
+      @notifications = []
+      @unread_count = 0
+    end
   end
 
   def edit

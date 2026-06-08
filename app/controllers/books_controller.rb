@@ -2,7 +2,8 @@ class BooksController < ApplicationController
   before_action :require_login, only: [ :new, :create, :edit, :update, :destroy ]
 
   def index
-    @books = Book.all.includes(:user)
+    # Solo traemos los libros que tienen available: true
+    @books = Book.where(available: true).order(created_at: :desc)
   end
 
   def show
@@ -42,15 +43,15 @@ class BooksController < ApplicationController
   end
 
   def search
-    @books = Book.all.includes(:user)
+    # Iniciamos la búsqueda filtrando SOLO los libros disponibles
+    @books = Book.where(available: true).includes(:user)
 
     if params[:query].present?
       # Preparamos la búsqueda
       query_raw = params[:query].downcase
       query_clean = I18n.transliterate(params[:query]).downcase
 
-      # Buscamos de forma flexible
-      # Usamos '%#{valor}%' para que encuentre la palabra en cualquier parte del texto
+      # Buscamos de forma flexible sobre el conjunto de libros ya filtrados como disponibles
       @books = @books.where(
         "LOWER(title) LIKE ? OR LOWER(title) LIKE ? OR LOWER(author) LIKE ? OR LOWER(author) LIKE ?",
         "%#{query_raw}%", "%#{query_clean}%", "%#{query_raw}%", "%#{query_clean}%"
@@ -62,6 +63,16 @@ class BooksController < ApplicationController
     end
 
     render :index
+  end
+
+  def toggle_availability
+    @book = Book.find(params[:id])
+    if @book.user == current_user
+      @book.update(available: !@book.available)
+      redirect_to @book, notice: "El estado del libro ha sido actualizado."
+    else
+      redirect_to root_path, alert: "No tienes permiso para hacer esto."
+    end
   end
 
   private

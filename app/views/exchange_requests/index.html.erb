@@ -1,27 +1,122 @@
-<h2>Solicitudes de intercambio</h2>
-
-<h3>Solicitudes recibidas</h3>
-<% @received.each do |req| %>
-  <p>
-    <strong><%= req.sender.name %></strong> quiere intercambiar el libro <%= link_to req.book.title, book_path(req.book) %><br>
-    Estado: <%= req.status %><br>
-
-    <% if req.status == "pending" %>
-      <%= button_to "Aceptar", exchange_request_path(req, status: "accepted"), method: :patch %>
-      <%= button_to "Rechazar", exchange_request_path(req, status: "rejected"), method: :patch %>
-    <% elsif req.status == "accepted" %>
-      <p><strong>Contacto del usuario:</strong> <%= req.sender.email %></p>
+<div class="container py-5">
+  <div class="d-flex align-items-center mb-4 position-relative">
+    <%= link_to user_path(current_user), class: "btn shadow-sm d-flex align-items-center justify-content-center", 
+        style: "background-color: #6f4a6e; color: white; border-radius: 50%; width: 45px; height: 45px; position: absolute; left: 0;" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+      </svg>
     <% end %>
-  </p>
-<% end %>
+    
+    <h2 class="fw-bold w-100 text-center m-0 text-dark">Gestionar Intercambios</h2>
+  </div>
 
-<h3>Solicitudes enviadas</h3>
-<% @sent.each do |req| %>
-  <p>
-    A <%= req.receiver.name %> por el libro <%= link_to req.book.title, book_path(req.book) %><br>
-    Estado: <%= req.status %>
-    <% if req.status == "accepted" %>
-      <br><strong>Contacto del usuario:</strong> <%= req.receiver.email %>
-    <% end %>
-  </p>
-<% end %>
+  <div class="row">
+    <div class="col-lg-6">
+      <h4 class="mb-3 text-secondary">Solicitudes recibidas</h4>
+      <% @received.each do |req| %>
+        <div class="card shadow-sm border-0 mb-3" style="border-radius: 15px;">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                <%= req.sender.name[0].upcase %>
+              </div>
+              <div>
+                <h6 class="mb-0 fw-bold"><%= req.sender.name %></h6>
+                <small class="text-muted">Quiere tu libro: <strong><%= req.book.title %></strong></small>
+              </div>
+            </div>
+
+            <p class="small text-muted mb-3">Estado: 
+              <span class="badge <%= req.status == 'pending' ? 'bg-warning' : (req.status == 'accepted' ? 'bg-success' : 'bg-danger') %>">
+                <%= req.status.capitalize %>
+              </span>
+            </p>
+
+            <% if req.status == "pending" %>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-success px-3 rounded-pill" data-bs-toggle="modal" data-bs-target="#modalAccept<%= req.id %>">
+                  Aceptar
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 rounded-pill" data-bs-toggle="modal" data-bs-target="#modalReject<%= req.id %>">
+                  Rechazar
+                </button>
+              </div>
+
+              <div class="modal fade" id="modalAccept<%= req.id %>" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+                    <%= form_with(model: req, local: true) do |f| %>
+                      <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">Aceptar Intercambio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="text-muted small">Al aceptar, se enviará un correo a <%= req.sender.name %> con tu información de contacto.</p>
+                        <%= f.hidden_field :status, value: "accepted" %>
+                        <%= f.label :response_message, "Escribe un mensaje o lugar de encuentro:", class: "form-label small fw-bold" %>
+                        <%= f.text_area :response_message, class: "form-control bg-light border-0", rows: 3, placeholder: "Hola! Me encantaría intercambiar. Podemos vernos en...", required: true %>
+                      </div>
+                      <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                        <%= f.submit "Aceptar y enviar correo", class: "btn btn-success rounded-pill px-4" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal fade" id="modalReject<%= req.id %>" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+                    <%= form_with(model: req, local: true) do |f| %>
+                      <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">Rechazar Solicitud</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <%= f.hidden_field :status, value: "rejected" %>
+                        <%= f.label :response_message, "Motivo del rechazo (opcional):", class: "form-label small fw-bold" %>
+                        <%= f.text_area :response_message, class: "form-control bg-light border-0", rows: 3, placeholder: "Lo siento, ya no tengo el libro disponible..." %>
+                      </div>
+                      <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                        <%= f.submit "Rechazar solicitud", class: "btn btn-danger rounded-pill px-4" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-lg-6">
+      <h4 class="mb-3 text-secondary">Solicitudes enviadas</h4>
+      <% @sent.each do |req| %>
+        <div class="card shadow-sm border-0 mb-3" style="border-radius: 15px; background-color: #fcfcfc;">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-1">Para: <%= req.receiver.name %></h6>
+            <p class="small text-muted mb-2 text-truncate">Libro: <%= req.book.title %></p>
+            <span class="badge <%= req.status == 'pending' ? 'bg-secondary' : (req.status == 'accepted' ? 'bg-success' : 'bg-danger') %> mb-3">
+              <%= req.status.capitalize %>
+            </span>
+            
+            <% if req.status == "accepted" %>
+              <div class="mt-2 p-3 bg-white border rounded" style="font-size: 0.9rem;">
+                <p class="mb-1 text-success fw-bold"><i class="bi bi-check-circle-fill"></i> ¡Aceptada!</p>
+                <p class="mb-1"><strong>Contacto:</strong> <%= req.receiver.email %></p>
+                <% if req.response_message.present? %>
+                  <p class="mb-0 italic text-muted">"<%= req.response_message %>"</p>
+                <% end %>
+              </div>
+            <% elsif req.status == "rejected" && req.response_message.present? %>
+               <p class="small text-danger mt-2">Motivo: <%= req.response_message %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

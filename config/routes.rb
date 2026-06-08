@@ -47,4 +47,8 @@ Rails.application.routes.draw do
   resources :notifications, only: [] do
     patch :mark_read, on: :member
   end
+
+  resources :books do
+    patch :toggle_availability, on: :member
+  end
 end

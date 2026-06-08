@@ -1,0 +1,10 @@
+<h1>¡Buenas noticias, <%= @sender.name %>!</h1>
+<p><%= @receiver.name %> ha aceptado tu solicitud para intercambiar el libro <strong><%= @book.title %></strong>.</p>
+
+<div style="background: #f4f4f4; padding: 15px; border-radius: 10px;">
+  <p><strong>Mensaje de <%= @receiver.name %>:</strong></p>
+  <p><%= @message %></p>
+  <p><strong>Información de contacto:</strong> <%= @receiver.email %></p>
+</div>
+
+<p>¡Pónganse en contacto pronto para coordinar el intercambio!</p>

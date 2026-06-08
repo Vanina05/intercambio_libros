@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_17_170736) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_18_141330) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -49,6 +49,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_17_170736) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "available", default: true
     t.index ["user_id"], name: "index_books_on_user_id"
   end
 
@@ -59,6 +60,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_17_170736) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "response_message"
     t.index ["book_id"], name: "index_exchange_requests_on_book_id"
     t.index ["receiver_id"], name: "index_exchange_requests_on_receiver_id"
     t.index ["sender_id"], name: "index_exchange_requests_on_sender_id"

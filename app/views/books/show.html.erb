@@ -45,17 +45,35 @@
           </div>
 
           <div class="d-flex flex-wrap gap-3 align-items-center">
-            
+  
+            <%# 1. Lógica para el visitante (Solicitar intercambio) %>
             <% if current_user && current_user != @book.user %>
-              <%= form_with url: exchange_requests_path, method: :post do |f| %>
-                <%= hidden_field_tag :book_id, @book.id %>
-                <%= f.submit "Solicitar intercambio", class: "btn btn-primary btn-lg px-4 py-2 shadow-sm fw-bold" %>
+              <% if @book.available %>
+                <%= form_with url: exchange_requests_path, method: :post do |f| %>
+                  <%= hidden_field_tag :book_id, @book.id %>
+                  <%= f.submit "Solicitar intercambio", class: "btn btn-primary btn-lg px-4 py-2 shadow-sm fw-bold" %>
+                <% end %>
+              <% else %>
+                <button class="btn btn-secondary btn-lg px-4 py-2" disabled>No disponible para intercambio</button>
               <% end %>
             <% end %>
 
+            <%# 2. Lógica para el dueño (Gestionar disponibilidad) %>
             <% if current_user == @book.user %>
-              <%= link_to "Editar libro", edit_book_path(@book), class: "btn btn-success btn-lg px-4" %>
-              <%= button_to "Eliminar libro", book_path(@book), method: :delete, data: { confirm: "¿Estás seguro?" }, class: "btn btn-outline-danger btn-lg px-4" %>
+              <div class="d-flex gap-2 w-100 mt-2">
+                <% if @book.available %>
+                  <%= button_to toggle_availability_book_path(@book), method: :patch, class: "btn btn-warning btn-lg px-4 fw-bold" do %>
+                    <i class="bi bi-pause-circle me-1"></i> Marcar como NO disponible
+                  <% end %>
+                <% else %>
+                  <%= button_to toggle_availability_book_path(@book), method: :patch, class: "btn btn-outline-success btn-lg px-4 fw-bold" do %>
+                    <i class="bi bi-play-circle me-1"></i> Marcar como disponible
+                  <% end %>
+                <% end %>
+                
+                <%= link_to "Editar libro", edit_book_path(@book), class: "btn btn-success btn-lg px-4" %>
+                <%= button_to "Eliminar libro", book_path(@book), method: :delete, data: { confirm: "¿Estás seguro?" }, class: "btn btn-outline-danger btn-lg px-4" %>
+              </div>
             <% end %>
 
             <%= link_to 'Volver al inicio', root_path, class: 'btn btn-link text-secondary text-decoration-none' %>
